@@ -5,19 +5,7 @@ import { ArgumentError, NotFoundError } from "../src/VaultClient";
 
 describe("TOTP", () => {
   const baseUrl: string = process.env.VAULT_ADDRESS ?? "http://localhost:8200/";
-  const parsedBaseUrl = new URL(baseUrl);
-
-  const client = new RequestClient(
-    false,
-    {
-      host: parsedBaseUrl.host,
-      port: parsedBaseUrl.port,
-      protocol: parsedBaseUrl.protocol,
-      headers: {
-        "X-Vault-Token": process.env.VAULT_TOKEN ?? "2852e82e-c84c-4a82-8339-61b9ec503816"
-      }
-    } 
-  );
+  const client = new RequestClient(baseUrl, false);
 
   beforeAll(async () => {
     await client.post("v1/sys/mounts/totptesting", {

@@ -37,9 +37,6 @@ export class VaultClient {
 
     this._defaultRequestOptions = {
       agent: options.agent,
-      host: this._baseUrl.host,
-      port: this._baseUrl.port,
-      protocol: this._baseUrl.protocol,
       timeout: this._timeout,
       headers: {
         "X-Vault-Token": this._token
@@ -47,6 +44,7 @@ export class VaultClient {
     };
 
     this._client = new RequestClient(
+      this._baseUrl.toString(),
       this._baseUrl.protocol === "https:",
       this._defaultRequestOptions,
       this._maximumRetry

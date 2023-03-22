@@ -17,17 +17,8 @@ type ReadSecretIdResponse = {
 
 describe("AppRole", () => {
   const baseUrl: string = process.env.VAULT_ADDRESS ?? "http://localhost:8200/";
-  const parsedBaseUrl = new URL(baseUrl);
 
-
-  const client = new RequestClient(
-    false,
-    {
-      host: parsedBaseUrl.host,
-      port: parsedBaseUrl.port,
-      protocol: parsedBaseUrl.protocol
-    } 
-  );
+  const client = new RequestClient(baseUrl, false);
 
   let roleId = "";
   let secretId = "";

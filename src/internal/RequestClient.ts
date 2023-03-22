@@ -44,6 +44,7 @@ export class HTTPError extends Error {
 
 export class RequestClient {
   constructor(
+    private readonly baseURL: string,
     private readonly secure: boolean = false,
     private defaultRequestOptions?: http.RequestOptions | https.RequestOptions,
     private readonly maximumRetry?: number
@@ -77,7 +78,7 @@ export class RequestClient {
   private send<T = unknown>(method: Method, url: string, options?: RequestOptions): Promise<T>
   private send<T = unknown>(method: Method, url: string, options?: RequestOptions): Promise<T> {
     // Build request parameters
-    let finalUrl = url;
+    const finalUrl = new URL(url, this.baseURL);
     let requestBody = "";
     let requestOptions: http.RequestOptions | https.RequestOptions = {
       ...this.defaultRequestOptions,
@@ -99,19 +100,16 @@ export class RequestClient {
       }
 
       if (options.searchParams !== undefined) {
-        const searchParams = new URLSearchParams();
         for (const [key, value] of Object.entries(options.searchParams)) {
           if (typeof value === "string") {
-            searchParams.set(key, value);
+            finalUrl.searchParams.set(key, value);
             continue;
           }
 
           for (const value2 of value) {
-            searchParams.set(key, value2);
+            finalUrl.searchParams.set(key, value2);
           }
         }
-
-        finalUrl = `${finalUrl}?${searchParams.toString()}`;
       }
 
       if (options.responseType === "json") {
@@ -153,7 +151,7 @@ export class RequestClient {
         // Use https
         request = https.request(finalUrl, requestOptions, (res: http.IncomingMessage) => {
           responseStatusCode = res.statusCode;
-          res.on("data", (chunk) => {
+          res.on("data", (chunk: string) => {
             responseBody += chunk;
           });
 
@@ -180,7 +178,7 @@ export class RequestClient {
       } else {
         request = http.request(finalUrl, requestOptions, (res: http.IncomingMessage) => {
           responseStatusCode = res.statusCode;
-          res.on("data", (chunk) => {
+          res.on("data", (chunk: string) => {
             responseBody += chunk;
           });
 

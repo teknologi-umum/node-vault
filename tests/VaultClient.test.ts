@@ -16,14 +16,11 @@ type ReadSecretIdResponse = {
 
 describe("VaultClient", () => {
   const baseUrl: string = process.env.VAULT_ADDRESS ?? "http://localhost:8200/";
-  const parsedBaseUrl = new URL(baseUrl);
 
   const internalClient = new RequestClient(
+    baseUrl,
     false,
     {
-      host: parsedBaseUrl.host,
-      port: parsedBaseUrl.port,
-      protocol: parsedBaseUrl.protocol,
       headers: {
         "X-Vault-Token": process.env.VAULT_TOKEN ?? "2852e82e-c84c-4a82-8339-61b9ec503816"
       }

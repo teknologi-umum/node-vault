@@ -5,16 +5,7 @@ import { ArgumentError, NotFoundError } from "../src/VaultClient";
 
 describe("KVv2", () => {
   const baseUrl: string = process.env.VAULT_ADDRESS ?? "http://localhost:8200/";
-  const parsedBaseUrl = new URL(baseUrl);
-
-  const client = new RequestClient(
-    false,
-    {
-      host: parsedBaseUrl.host,
-      port: parsedBaseUrl.port,
-      protocol: parsedBaseUrl.protocol
-    } 
-  );
+  const client = new RequestClient(baseUrl, false);
 
   beforeAll(async () => {
     await client.post("v1/sys/mounts/kvtesting", {
