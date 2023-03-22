@@ -68,14 +68,7 @@ export class RequestClient {
   }
 
   delete<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
-    let parsedUrl;
-    if (typeof url === "string") {
-      parsedUrl = new URL(url);
-    } else {
-      parsedUrl = url;
-    }
-
-    return this.send(Method.Delete, parsedUrl, options);
+    return this.send(Method.Delete, url, options);
   }
 
 
