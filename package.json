@@ -1,0 +1,67 @@
+{
+  "name": "@teknologi-umum/vault",
+  "version": "0.0.0",
+  "description": "Hashicorp Vault SDK for Node.js",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "browser": "dist/index.iife.js",
+  "jsdelivr": "dist/index.iife.js",
+  "unpkg": "dist/index.iife.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*"
+  },
+  "scripts": {
+    "lint": "eslint --fix --ignore-path .gitignore .",
+    "test:unit": "vitest run",
+    "test:coverage": "c8 --reporter=text --reporter=lcov npm run test:unit",
+    "test:tdd": "npm run test:unit; watchlist src tests -- npm run test:unit",
+    "test": "npm run test:coverage",
+    "build": "rollup -c"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teknologi-umum/node-vault.git"
+  },
+  "funding": "https://saweria.co/teknologiumum",
+  "keywords": [
+    "programming",
+    "language",
+    "detection",
+    "detector",
+    "code",
+    "classify",
+    "classifier",
+    "identify",
+    "identifier"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/teknologi-umum/node-vault/issues"
+  },
+  "homepage": "https://github.com/teknologi-umum/node-vault#readme",
+  "directories": {
+    "lib": "./src",
+    "test": "./tests"
+  },
+  "devDependencies": {
+    "@rollup/plugin-terser": "^0.4.0",
+    "@rollup/plugin-typescript": "^11.0.0",
+    "@teknologi-umum/eslint-config-typescript": "^0.0.7",
+    "@types/node": "^18.15.5",
+    "c8": "^7.13.0",
+    "eslint": "^8.36.0",
+    "rollup": "^3.20.0",
+    "tslib": "^2.5.0",
+    "typescript": "^5.0.2",
+    "vitest": "^0.29.7"
+  }
+}
