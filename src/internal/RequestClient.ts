@@ -51,51 +51,23 @@ export class RequestClient {
     if (this.maximumRetry < 0) throw new ArgumentError("maximumRetry must not be less than zero");
   }
 
-  get<T = unknown>(url: URL | string, options?: RequestOptions): Promise<T> {
-    let parsedUrl;
-    if (typeof url === "string") {
-      parsedUrl = new URL(url);
-    } else {
-      parsedUrl = url;
-    }
-
-    return this.send(Method.Get, parsedUrl, options);
+  get<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
+    return this.send(Method.Get, url, options);
   }
 
-  post<T = unknown>(url: URL | string, options?: RequestOptions): Promise<T> {
-    let parsedUrl;
-    if (typeof url === "string") {
-      parsedUrl = new URL(url);
-    } else {
-      parsedUrl = url;
-    }
-
-    return this.send(Method.Post, parsedUrl, options);
+  post<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
+    return this.send(Method.Post, url, options);
   }
 
-  put<T = unknown>(url: URL | string, options?: RequestOptions): Promise<T> {
-    let parsedUrl;
-    if (typeof url === "string") {
-      parsedUrl = new URL(url);
-    } else {
-      parsedUrl = url;
-    }
-
-    return this.send(Method.Put, parsedUrl, options);
+  put<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
+    return this.send(Method.Put, url, options);
   }
 
-  patch<T = unknown>(url: URL | string, options?: RequestOptions): Promise<T> {
-    let parsedUrl;
-    if (typeof url === "string") {
-      parsedUrl = new URL(url);
-    } else {
-      parsedUrl = url;
-    }
-
-    return this.send(Method.Patch, parsedUrl, options);
+  patch<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
+    return this.send(Method.Patch, url, options);
   }
 
-  delete<T = unknown>(url: URL | string, options?: RequestOptions): Promise<T> {
+  delete<T = unknown>(url: string, options?: RequestOptions): Promise<T> {
     let parsedUrl;
     if (typeof url === "string") {
       parsedUrl = new URL(url);
@@ -107,12 +79,12 @@ export class RequestClient {
   }
 
 
-  private send<T>(method: Method, url: URL, options?: RequestOptions & {responseType: "json"}): Promise<T>
-  private send<T = string>(method: Method, url: URL, options?: RequestOptions & { responseType: "text" }): Promise<T>
-  private send<T = unknown>(method: Method, url: URL, options?: RequestOptions): Promise<T>
-  private send<T = unknown>(method: Method, url: URL, options?: RequestOptions): Promise<T> {
+  private send<T>(method: Method, url: string, options?: RequestOptions & {responseType: "json"}): Promise<T>
+  private send<T = string>(method: Method, url: string, options?: RequestOptions & { responseType: "text" }): Promise<T>
+  private send<T = unknown>(method: Method, url: string, options?: RequestOptions): Promise<T>
+  private send<T = unknown>(method: Method, url: string, options?: RequestOptions): Promise<T> {
     // Build request parameters
-    const finalUrl: URL = url;
+    let finalUrl = url;
     let requestBody = "";
     let requestOptions: http.RequestOptions | https.RequestOptions = {
       ...this.defaultRequestOptions,
@@ -134,16 +106,19 @@ export class RequestClient {
       }
 
       if (options.searchParams !== undefined) {
+        const searchParams = new URLSearchParams();
         for (const [key, value] of Object.entries(options.searchParams)) {
           if (typeof value === "string") {
-            finalUrl.searchParams.set(key, value);
+            searchParams.set(key, value);
             continue;
           }
 
           for (const value2 of value) {
-            finalUrl.searchParams.set(key, value2);
+            searchParams.set(key, value2);
           }
         }
+
+        finalUrl = `${finalUrl}?${searchParams.toString()}`;
       }
 
       if (options.responseType === "json") {
