@@ -1,5 +1,5 @@
-import {type Agent as HttpAgent } from "http";
-import {type Agent as HttpsAgent } from "https";
+import {type Agent as HttpAgent} from "http";
+import {type Agent as HttpsAgent} from "https";
 import {KVv2} from "./KVv2";
 import {AppRole} from "./auth/AppRole";
 import {LDAP} from "./auth/LDAP";
@@ -30,6 +30,7 @@ export class VaultClient {
   private _token?: string;
   private _defaultRequestOptions: RequestOptions;
   private _client: RequestClient;
+
   constructor(options: Partial<ClientOptions>) {
     this._baseUrl = new URL(options.address ?? DEFAULT_CONFIG.address);
     this._maximumRetry = options.maximumRetry ?? DEFAULT_CONFIG.maximumRetry;
@@ -51,9 +52,9 @@ export class VaultClient {
 
   public setToken(token: string) {
     this._token = token;
-    this._defaultRequestOptions = { 
-      ...this._defaultRequestOptions, 
-      headers: { 
+    this._defaultRequestOptions = {
+      ...this._defaultRequestOptions,
+      headers: {
         ...this._defaultRequestOptions.headers,
         "X-Vault-Token": token
       }

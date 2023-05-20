@@ -23,5 +23,5 @@ export default {
       sourcemap: true
     }
   ],
-  plugins: [ts({ tsconfig: "./tsconfig.json" })]
+  plugins: [ts({tsconfig: "./tsconfig.json"})]
 };

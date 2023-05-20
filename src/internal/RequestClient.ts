@@ -1,5 +1,5 @@
-import { request } from "undici";
-import { ArgumentError } from "../errors/ArgumentError";
+import {request} from "undici";
+import {ArgumentError} from "../errors/ArgumentError";
 
 export type RequestOptions = {
   json?: Record<string, unknown>,
@@ -87,7 +87,7 @@ export class RequestClient {
     if (options !== undefined) {
       if (options.json !== undefined) {
         requestBody = JSON.stringify(options.json);
-        
+
         requestOptions = {
           ...requestOptions,
           headers: {

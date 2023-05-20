@@ -1,7 +1,7 @@
 import {afterAll, beforeAll, describe, expect, it} from "vitest";
-import { RequestClient } from "../src/internal/RequestClient";
-import { KVv2 } from "../src/KVv2";
-import { ArgumentError, NotFoundError } from "../src";
+import {RequestClient} from "../src/internal/RequestClient";
+import {KVv2} from "../src/KVv2";
+import {ArgumentError, NotFoundError} from "../src";
 
 describe("KVv2", () => {
   const baseUrl: string = process.env.VAULT_ADDRESS ?? "http://localhost:8200/";

@@ -1,12 +1,13 @@
 import {IAuth} from "./IAuth";
 import {ArgumentError} from "../errors/ArgumentError";
-import { RequestClient } from "../internal/RequestClient";
+import {RequestClient} from "../internal/RequestClient";
 
 type UserPassLoginResponse = {
   auth: {
     client_token: string;
   };
 }
+
 export class UserPass implements IAuth {
   constructor(
     private readonly client: RequestClient,

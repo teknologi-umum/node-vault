@@ -1,7 +1,7 @@
 import {afterAll, beforeAll, describe, expect, it} from "vitest";
-import { RequestClient } from "../src/internal/RequestClient";
-import { TOTP } from "../src/TOTP";
-import { ArgumentError, NotFoundError } from "../src";
+import {RequestClient} from "../src/internal/RequestClient";
+import {TOTP} from "../src/TOTP";
+import {ArgumentError, NotFoundError} from "../src";
 
 describe("TOTP", () => {
   const baseUrl: string = process.env.VAULT_ADDRESS ?? "http://localhost:8200/";

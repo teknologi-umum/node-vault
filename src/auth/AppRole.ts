@@ -1,6 +1,6 @@
 import {IAuth} from "./IAuth";
 import {ArgumentError} from "../errors/ArgumentError";
-import { RequestClient } from "../internal/RequestClient";
+import {RequestClient} from "../internal/RequestClient";
 
 type AppRoleLoginResponse = {
   auth: {
