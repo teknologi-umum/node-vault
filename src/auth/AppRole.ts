@@ -1,6 +1,6 @@
 import {IAuth} from "./IAuth";
 import {ArgumentError} from "../errors/ArgumentError";
-import { RequestClient } from "../internal/RequestClient";
+import {RequestClient} from "../internal/RequestClient";
 
 type AppRoleLoginResponse = {
   auth: {
@@ -25,7 +25,7 @@ export class AppRole implements IAuth {
         secret_id: this.secretId
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
     });
 
     return response.auth.client_token;

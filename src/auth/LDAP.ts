@@ -1,12 +1,13 @@
 import {IAuth} from "./IAuth";
 import {ArgumentError} from "../errors/ArgumentError";
-import { RequestClient } from "../internal/RequestClient";
+import {RequestClient} from "../internal/RequestClient";
 
 type LDAPLoginResponse = {
   auth: {
     client_token: string;
   };
 }
+
 export class LDAP implements IAuth {
   constructor(
     private readonly client: RequestClient,
@@ -23,7 +24,7 @@ export class LDAP implements IAuth {
         password: this.password
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
     });
 
     return response.auth.client_token;

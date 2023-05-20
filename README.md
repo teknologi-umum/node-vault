@@ -4,6 +4,7 @@ Third party client library to connect to [Hashicorp Vault](https://www.vaultproj
 to mimic some of more proper Vault SDK like [official Go SDK](https://pkg.go.dev/github.com/hashicorp/vault/api).
 
 Features implemented:
+
 - Secrets Engine
   - [ ] K/V Version 1
   - [x] K/V Version 2
@@ -26,7 +27,7 @@ You can help extending the features by contributing to the repository.
 ## Example
 
 ```ts
-import { VaultClient } from "@teknologi-umum/vault";
+import {VaultClient} from "@teknologi-umum/vault";
 
 const client = new VaultClient({address: process.env.VAULT_ADDRESS ?? "http://localhost:8200/"});
 
@@ -39,11 +40,11 @@ client.setToken(vaultToken);
 // Create a KVv2 secret engine client using the "kv2" mount.
 const kv = client.kvv2("kv2");
 
-await kv.put("hello", { value: "world" });
+await kv.put("hello", {value: "world"});
 const firstSecret = await kv.get("hello"); // firstSecret.data returns '{ value: "world" }'
 
 
-await kv.patch("hello", { secondValue: "foobar" });
+await kv.patch("hello", {secondValue: "foobar"});
 
 await kv.delete("hello");
 ```

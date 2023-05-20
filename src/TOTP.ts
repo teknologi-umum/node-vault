@@ -1,6 +1,6 @@
-import { ArgumentError } from "./errors/ArgumentError";
-import { NotFoundError } from "./errors/NotFoundError";
-import { HTTPError, RequestClient } from "./internal/RequestClient";
+import {ArgumentError} from "./errors/ArgumentError";
+import {NotFoundError} from "./errors/NotFoundError";
+import {HTTPError, RequestClient} from "./internal/RequestClient";
 
 type GenerateResponse = {
   data: {
@@ -23,11 +23,11 @@ export class TOTP {
   }
 
   /**
-     *
-     * @param name
-     * @param abortSignal
-     * @see https://developer.hashicorp.com/vault/api-docs/secret/totp#generate-code
-     */
+   *
+   * @param name
+   * @param abortSignal
+   * @see https://developer.hashicorp.com/vault/api-docs/secret/totp#generate-code
+   */
   async generateCode(name: string, abortSignal?: AbortSignal): Promise<string> {
     const pathToRead = `${this.mountPath}/code/${name}`;
 
@@ -36,7 +36,7 @@ export class TOTP {
         `v1/${pathToRead}`,
         {
           responseType: "json",
-          abortSignal: abortSignal
+          signal: abortSignal
         }
       );
 
@@ -54,12 +54,12 @@ export class TOTP {
   }
 
   /**
-     *
-     * @param name
-     * @param code
-     * @param abortSignal
-     * @see https://developer.hashicorp.com/vault/api-docs/secret/totp#validate-code
-     */
+   *
+   * @param name
+   * @param code
+   * @param abortSignal
+   * @see https://developer.hashicorp.com/vault/api-docs/secret/totp#validate-code
+   */
   async validateCode(name: string, code: string, abortSignal?: AbortSignal): Promise<boolean> {
     const pathToRead = `${this.mountPath}/code/${name}`;
 
@@ -71,7 +71,7 @@ export class TOTP {
           json: {
             code: code
           },
-          abortSignal: abortSignal
+          signal: abortSignal
         }
       );
 

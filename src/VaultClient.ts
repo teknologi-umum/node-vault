@@ -1,11 +1,11 @@
-import {type RequestOptions as HttpRequestOptions, type Agent as HttpAgent } from "http";
-import {type RequestOptions as HttpsRequestOptions, type Agent as HttpsAgent } from "https";
+import {type Agent as HttpAgent} from "http";
+import {type Agent as HttpsAgent} from "https";
 import {KVv2} from "./KVv2";
 import {AppRole} from "./auth/AppRole";
 import {LDAP} from "./auth/LDAP";
 import {UserPass} from "./auth/UserPass";
 import {TOTP} from "./TOTP";
-import { RequestClient } from "./internal/RequestClient";
+import {RequestClient, RequestOptions} from "./internal/RequestClient";
 
 type ClientOptions = {
   address: string;
@@ -28,15 +28,15 @@ export class VaultClient {
   private readonly _maximumRetry: number;
   private readonly _timeout: number;
   private _token?: string;
-  private _defaultRequestOptions: HttpRequestOptions | HttpsRequestOptions;
+  private _defaultRequestOptions: RequestOptions;
   private _client: RequestClient;
+
   constructor(options: Partial<ClientOptions>) {
     this._baseUrl = new URL(options.address ?? DEFAULT_CONFIG.address);
     this._maximumRetry = options.maximumRetry ?? DEFAULT_CONFIG.maximumRetry;
     this._timeout = options.timeoutMillisecond ?? DEFAULT_CONFIG.timeoutMillisecond;
 
     this._defaultRequestOptions = {
-      agent: options.agent,
       timeout: this._timeout,
       headers: {
         "X-Vault-Token": this._token
@@ -45,7 +45,6 @@ export class VaultClient {
 
     this._client = new RequestClient(
       this._baseUrl.toString(),
-      this._baseUrl.protocol === "https:",
       this._defaultRequestOptions,
       this._maximumRetry
     );
@@ -53,13 +52,19 @@ export class VaultClient {
 
   public setToken(token: string) {
     this._token = token;
-    this._defaultRequestOptions = { 
-      ...this._defaultRequestOptions, 
-      headers: { 
+    this._defaultRequestOptions = {
+      ...this._defaultRequestOptions,
+      headers: {
         ...this._defaultRequestOptions.headers,
         "X-Vault-Token": token
       }
     };
+
+    this._client = new RequestClient(
+      this._baseUrl.toString(),
+      this._defaultRequestOptions,
+      this._maximumRetry
+    );
   }
 
   public kvv2(mountPath: string): KVv2 {

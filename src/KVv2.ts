@@ -1,7 +1,7 @@
 import {ArgumentError} from "./errors/ArgumentError";
 import {Metadata, Secret} from "./Secrets";
 import {NotFoundError} from "./errors/NotFoundError";
-import { HTTPError, RequestClient } from "./internal/RequestClient";
+import {HTTPError, RequestClient} from "./internal/RequestClient";
 
 type ReadResponse = {
   data: Secret;
@@ -25,12 +25,12 @@ export class KVv2 {
   }
 
   /**
-     *
-     * @param secretPath
-     * @param version Will acquire the latest version if left undefined
-     * @param abortSignal
-     * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#read-secret-version
-     */
+   *
+   * @param secretPath
+   * @param version Will acquire the latest version if left undefined
+   * @param abortSignal
+   * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#read-secret-version
+   */
   async get(secretPath: string, version?: number, abortSignal?: AbortSignal): Promise<Secret> {
     const pathToRead = `${this.mountPath}/data/${secretPath}`;
 
@@ -38,9 +38,9 @@ export class KVv2 {
       const response = await this.client.get<ReadResponse>(`v1/${pathToRead}`, {
         responseType: "json",
         searchParams: {
-          version: version.toString()
+          version: version?.toString()
         },
-        abortSignal: abortSignal
+        signal: abortSignal
       });
 
       return response.data;
@@ -57,12 +57,12 @@ export class KVv2 {
   }
 
   /**
-     *
-     * @param secretPath
-     * @param data
-     * @param abortSignal
-     * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#create-update-secret
-     */
+   *
+   * @param secretPath
+   * @param data
+   * @param abortSignal
+   * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#create-update-secret
+   */
   async put(secretPath: string, data: Record<string, unknown>, abortSignal?: AbortSignal): Promise<Metadata> {
     const pathToWrite = `${this.mountPath}/data/${secretPath}`;
 
@@ -71,19 +71,19 @@ export class KVv2 {
         data: data
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
     });
 
     return response.data;
   }
 
   /**
-     *
-     * @param secretPath
-     * @param data
-     * @param abortSignal
-     * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#patch-secret
-     */
+   *
+   * @param secretPath
+   * @param data
+   * @param abortSignal
+   * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#patch-secret
+   */
   async patch(secretPath: string, data: Record<string, unknown>, abortSignal?: AbortSignal): Promise<Metadata> {
     const pathToWrite = `${this.mountPath}/data/${secretPath}`;
 
@@ -95,7 +95,7 @@ export class KVv2 {
         "Content-Type": "application/merge-patch+json"
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
 
     });
 
@@ -103,14 +103,14 @@ export class KVv2 {
   }
 
   /**
-     *
-     * @param secretPath
-     * @param abortSignal
-     * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#delete-latest-version-of-secret
-     */
+   *
+   * @param secretPath
+   * @param abortSignal
+   * @see https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#delete-latest-version-of-secret
+   */
   async delete(secretPath: string, abortSignal?: AbortSignal): Promise<void> {
     const pathToDelete = `${this.mountPath}/data/${secretPath}`;
 
-    await this.client.delete(`v1/${pathToDelete}`, { abortSignal: abortSignal });
+    await this.client.delete(`v1/${pathToDelete}`, {signal: abortSignal});
   }
 }
