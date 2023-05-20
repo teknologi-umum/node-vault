@@ -1,11 +1,15 @@
 import {afterAll, beforeAll, describe, expect, it} from "vitest";
 import { RequestClient } from "../src/internal/RequestClient";
 import { TOTP } from "../src/TOTP";
-import { ArgumentError, NotFoundError } from "../src/VaultClient";
+import { ArgumentError, NotFoundError } from "../src";
 
 describe("TOTP", () => {
   const baseUrl: string = process.env.VAULT_ADDRESS ?? "http://localhost:8200/";
-  const client = new RequestClient(baseUrl, false);
+  const client = new RequestClient(baseUrl, {
+    headers: {
+      "X-Vault-Token": process.env?.VAULT_TOKEN ?? "2852e82e-c84c-4a82-8339-61b9ec503816"
+    }
+  });
 
   beforeAll(async () => {
     await client.post("v1/sys/mounts/totptesting", {

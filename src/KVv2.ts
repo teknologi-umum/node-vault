@@ -38,9 +38,9 @@ export class KVv2 {
       const response = await this.client.get<ReadResponse>(`v1/${pathToRead}`, {
         responseType: "json",
         searchParams: {
-          version: version.toString()
+          version: version?.toString()
         },
-        abortSignal: abortSignal
+        signal: abortSignal
       });
 
       return response.data;
@@ -71,7 +71,7 @@ export class KVv2 {
         data: data
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
     });
 
     return response.data;
@@ -95,7 +95,7 @@ export class KVv2 {
         "Content-Type": "application/merge-patch+json"
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
 
     });
 
@@ -111,6 +111,6 @@ export class KVv2 {
   async delete(secretPath: string, abortSignal?: AbortSignal): Promise<void> {
     const pathToDelete = `${this.mountPath}/data/${secretPath}`;
 
-    await this.client.delete(`v1/${pathToDelete}`, { abortSignal: abortSignal });
+    await this.client.delete(`v1/${pathToDelete}`, { signal: abortSignal });
   }
 }

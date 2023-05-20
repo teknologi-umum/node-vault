@@ -64,5 +64,8 @@
     "tslib": "^2.5.0",
     "typescript": "^5.0.2",
     "vitest": "^0.29.7"
+  },
+  "dependencies": {
+    "undici": "^5.22.1"
   }
 }

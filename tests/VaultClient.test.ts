@@ -1,6 +1,6 @@
 import {afterAll, beforeAll, describe, it, expect} from "vitest";
 import { RequestClient } from "../src/internal/RequestClient";
-import { VaultClient, NotFoundError } from "../src/VaultClient";
+import { VaultClient, NotFoundError } from "../src";
 
 type ReadRoleIdResponse = {
   data: {
@@ -19,7 +19,6 @@ describe("VaultClient", () => {
 
   const internalClient = new RequestClient(
     baseUrl,
-    false,
     {
       headers: {
         "X-Vault-Token": process.env.VAULT_TOKEN ?? "2852e82e-c84c-4a82-8339-61b9ec503816"

@@ -1,0 +1,15 @@
+services:
+  vault:
+    image: hashicorp/vault
+    ports:
+      - 8200:8200
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "2852e82e-c84c-4a82-8339-61b9ec503816"
+      SKIP_SETCAP: "true"
+    restart: on-failure:1
+    healthcheck:
+      test: "vault status --address http://127.0.0.1:8200"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s

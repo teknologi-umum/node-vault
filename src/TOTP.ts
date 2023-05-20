@@ -36,7 +36,7 @@ export class TOTP {
         `v1/${pathToRead}`,
         {
           responseType: "json",
-          abortSignal: abortSignal
+          signal: abortSignal
         }
       );
 
@@ -71,7 +71,7 @@ export class TOTP {
           json: {
             code: code
           },
-          abortSignal: abortSignal
+          signal: abortSignal
         }
       );
 

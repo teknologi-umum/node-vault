@@ -23,7 +23,7 @@ export class LDAP implements IAuth {
         password: this.password
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
     });
 
     return response.auth.client_token;

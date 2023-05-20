@@ -1,5 +1,4 @@
-import http from "http";
-import https from "https";
+import { request } from "undici";
 import { ArgumentError } from "../errors/ArgumentError";
 
 export type RequestOptions = {
@@ -7,7 +6,8 @@ export type RequestOptions = {
   searchParams?: Record<string, string | string[]>,
   responseType?: "text" | "json",
   headers?: Record<string, string>,
-  abortSignal?: AbortSignal
+  signal?: AbortSignal,
+  timeout?: number
 }
 
 enum Method {
@@ -45,8 +45,7 @@ export class HTTPError extends Error {
 export class RequestClient {
   constructor(
     private readonly baseURL: string,
-    private readonly secure: boolean = false,
-    private defaultRequestOptions?: http.RequestOptions | https.RequestOptions,
+    private defaultRequestOptions?: RequestOptions,
     private readonly maximumRetry?: number
   ) {
     if (this.maximumRetry < 0) throw new ArgumentError("maximumRetry must not be less than zero");
@@ -73,19 +72,18 @@ export class RequestClient {
   }
 
 
-  private send<T>(method: Method, url: string, options?: RequestOptions & {responseType: "json"}): Promise<T>
+  private send<T>(method: Method, url: string, options?: RequestOptions & { responseType: "json" }): Promise<T>
   private send<T = string>(method: Method, url: string, options?: RequestOptions & { responseType: "text" }): Promise<T>
   private send<T = unknown>(method: Method, url: string, options?: RequestOptions): Promise<T>
-  private send<T = unknown>(method: Method, url: string, options?: RequestOptions): Promise<T> {
+  private async send<T = unknown>(method: Method, url: string, options?: RequestOptions): Promise<T> {
     // Build request parameters
     const finalUrl = new URL(url, this.baseURL);
-    let requestBody = "";
-    let requestOptions: http.RequestOptions | https.RequestOptions = {
+    let requestBody: string | null = null;
+    let requestOptions: RequestOptions = {
       ...this.defaultRequestOptions,
-      method: method
+      responseType: options?.responseType
     };
-    
-    
+
     if (options !== undefined) {
       if (options.json !== undefined) {
         requestBody = JSON.stringify(options.json);
@@ -100,19 +98,29 @@ export class RequestClient {
       }
 
       if (options.searchParams !== undefined) {
-        for (const [key, value] of Object.entries(options.searchParams)) {
+        requestOptions = {
+          ...requestOptions,
+          searchParams: {
+            ...requestOptions?.searchParams,
+            ...options.searchParams
+          }
+        };
+
+        for (const [key, value] of Object.entries(requestOptions.searchParams)) {
           if (typeof value === "string") {
             finalUrl.searchParams.set(key, value);
             continue;
           }
 
-          for (const value2 of value) {
-            finalUrl.searchParams.set(key, value2);
+          if (Array.isArray(value)) {
+            for (const value2 of value) {
+              finalUrl.searchParams.set(key, value2);
+            }
           }
         }
       }
 
-      if (options.responseType === "json") {
+      if (options?.responseType === "json") {
         requestOptions = {
           ...requestOptions,
           headers: {
@@ -122,10 +130,10 @@ export class RequestClient {
         };
       }
 
-      if (options.abortSignal !== undefined) {
+      if (options.signal !== undefined) {
         requestOptions = {
           ...requestOptions,
-          signal: options.abortSignal
+          signal: options.signal
         };
       }
 
@@ -139,94 +147,37 @@ export class RequestClient {
         };
       }
     }
-    
-    // Prepare response variables
-    let request: http.ClientRequest;
-    let responseBody = "";
-    let responseStatusCode: number;
-    let parsedResponseBody: T;
 
-    return new Promise((resolve, reject) => {
-      if (this.secure) {
-        // Use https
-        request = https.request(finalUrl, requestOptions, (res: http.IncomingMessage) => {
-          responseStatusCode = res.statusCode;
-          res.on("data", (chunk: string) => {
-            responseBody += chunk;
-          });
-
-          res.on("error", (err: Error) => {
-            if (err.message === "Error: aborted") {
-              return reject(new RequestAbortedError(err.message));
-            }
-    
-            return reject(new UnhandledRequestError(err.message));
-          });
-      
-  
-          res.on("end", () => {
-            if (responseBody !== "") {
-              if (options.responseType === "json") {
-                parsedResponseBody = JSON.parse(responseBody) as T;
-                return;
-              }
-
-              parsedResponseBody = responseBody as T;
-            }
-          });
-        });
-      } else {
-        request = http.request(finalUrl, requestOptions, (res: http.IncomingMessage) => {
-          responseStatusCode = res.statusCode;
-          res.on("data", (chunk: string) => {
-            responseBody += chunk;
-          });
-
-          
-          res.on("error", (err: Error) => {
-            if (err.message === "Error: aborted") {
-              return reject(new RequestAbortedError(err.message));
-            }
-
-            return reject(new UnhandledRequestError(err.message));
-          });
-  
-          res.on("end", () => {
-            if (responseBody !== "") {
-              if (options.responseType === "json") {
-                parsedResponseBody = JSON.parse(responseBody) as T;
-                return;
-              }
-
-              parsedResponseBody = responseBody as T;
-            }
-          });
-        });
-      }
-
-
-      request.on("error", (err: Error) => {
-        if (err.message === "Error: aborted") {
-          return reject(new RequestAbortedError(err.message));
-        }
-
-        return reject(new UnhandledRequestError(err.message));
-      });
-      
-
-      if (requestBody !== "") {
-        request.write(requestBody);
-      }
-  
-      request.end(() => {
-        if (responseStatusCode >= 400) {
-          reject(new HTTPError(responseStatusCode, responseBody, "non-2xx response"));
-          return;
-        }
-      
-        resolve(parsedResponseBody);
-      });
+    const response = await request(finalUrl, {
+      method: method,
+      signal: requestOptions?.signal,
+      body: requestBody,
+      headers: requestOptions?.headers ?? null,
+      bodyTimeout: requestOptions?.timeout ?? null,
+      throwOnError: false
     });
+
+    if (response.statusCode >= 400) {
+      const responseBody = await response.body.text();
+      throw new HTTPError(
+        response.statusCode,
+        responseBody,
+        `Received response with non successful status code of ${response.statusCode} while requesting to ${method} ${finalUrl.toString()}: ${responseBody}`
+      );
+    }
+
+    if (requestOptions?.responseType === "json") {
+      const responseBody = await response.body.json() as T;
+      return responseBody;
+    }
+
+    if (requestOptions?.responseType === "text") {
+      const responseBody = await response.body.text() as T;
+      return responseBody;
+    }
+
+    // Does not expect a response body
+    return undefined;
   }
 }
 

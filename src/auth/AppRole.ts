@@ -25,7 +25,7 @@ export class AppRole implements IAuth {
         secret_id: this.secretId
       },
       responseType: "json",
-      abortSignal: abortSignal
+      signal: abortSignal
     });
 
     return response.auth.client_token;

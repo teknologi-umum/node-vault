@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ 14, 16, 18 ]
+        node: [ 14, 16, 18, 20 ]
     services:
       hashicorp_vault:
-        image: vault
+        image: hashicorp/vault
         ports:
           - 8200:8200
         options: >-
