@@ -14,7 +14,7 @@ Features implemented:
   - [x] AppRole
   - [ ] AWS
   - [ ] Azure
-  - [ ] Github
+  - [x] Github
   - [ ] JWT/OIDC
   - [ ] Kubernetes
   - [x] LDAP
