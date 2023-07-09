@@ -67,5 +67,8 @@
   },
   "dependencies": {
     "undici": "^5.22.1"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }
