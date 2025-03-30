@@ -6,6 +6,7 @@ import {LDAP} from "./auth/LDAP";
 import {UserPass} from "./auth/UserPass";
 import {TOTP} from "./TOTP";
 import {RequestClient, RequestOptions} from "./internal/RequestClient";
+import { SSH } from "./SSH";
 
 type ClientOptions = {
   address: string;
@@ -73,6 +74,10 @@ export class VaultClient {
 
   public totp(mountPath: string): TOTP {
     return new TOTP(mountPath, this._client);
+  }
+
+  public ssh(mountPath: string): SSH {
+    return new SSH(mountPath, this._client);
   }
 
   public appRoleAuth(roleId: string, secretId: string): AppRole {
