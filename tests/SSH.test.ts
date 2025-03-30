@@ -60,7 +60,7 @@ describe("SSH", () => {
   it("should be able to list roles by ip", async () => {
     const ssh = new SSH("ssh", client);
 
-    await expect(ssh.listRolesByIp("10.100.0.1", "otp"))
+    await expect(ssh.listRolesByIp("10.100.0.1"))
       .resolves
       .toStrictEqual(["contoso"]);
   });

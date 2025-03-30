@@ -73,11 +73,10 @@ export class SSH {
    * @returns An array of roles as a secret structure.
    * @see https://developer.hashicorp.com/vault/api-docs/secret/ssh#list-roles-by-ip
    */
-  async listRolesByIp(ip: string, keyType: "otp" | "ca", signal?: AbortSignal): Promise<string[]> {
-    const pathToWrite = `${this.mountPath}/roles/${ip}`;
+  async listRolesByIp(ip: string, signal?: AbortSignal): Promise<string[]> {
+    const pathToWrite = `${this.mountPath}/lookup`;
     const body = {
-      ip: ip,
-      key_type: keyType
+      ip: ip
     };
 
     const response = await this.client.post<ListRolesByIpResponse>(`v1/${pathToWrite}`, {
