@@ -49,19 +49,19 @@ describe("SSH", () => {
       username: "ubuntu"
     });
 
-    const verified = await ssh.verifySSHOTP(credentials.key);
-
-    expect(verified).toMatchObject({
-      ip: "10.100.0.1",
-      username: "ubuntu"
-    });
+    await expect(ssh.verifySSHOTP(credentials.key))
+      .resolves
+      .toMatchObject({
+        ip: "10.100.0.1",
+        username: "ubuntu"
+      });
   });
 
   it("should be able to list roles by ip", async () => {
     const ssh = new SSH("ssh", client);
 
-    const roles = await ssh.listRolesByIp("10.100.0.1");
-
-    expect(roles).toStrictEqual(["contoso"]);
+    await expect(ssh.listRolesByIp("10.100.0.1", "otp"))
+      .resolves
+      .toStrictEqual(["contoso"]);
   });
 });
