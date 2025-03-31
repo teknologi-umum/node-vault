@@ -38,7 +38,7 @@ export class SSH {
     private readonly mountPath: string,
     private readonly client: RequestClient
   ) {
-    if (mountPath === "") throw new ArgumentError("mountPath");
+    if (mountPath === undefined || mountPath === null || mountPath === "") throw new ArgumentError("mountPath");
   }
 
   /**
