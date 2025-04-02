@@ -8,7 +8,7 @@ Features implemented:
 - Secrets Engine
   - [ ] K/V Version 1
   - [x] K/V Version 2
-  - [ ] SSH
+  - [x] SSH
   - [x] TOTP
 - Auth Method
   - [x] AppRole
